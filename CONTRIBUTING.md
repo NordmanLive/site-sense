@@ -9,7 +9,7 @@ git clone https://github.com/NordmanLive/site-sense.git
 cd site-sense
 npm install
 npm run build
-npm test        # 11 tests, <1s
+npm test        # 10 tests, <1s
 ```
 
 ## Making Changes

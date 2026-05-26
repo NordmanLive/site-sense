@@ -102,7 +102,7 @@ Three-layer extension pipeline:
 |---|---|
 | Extension | TypeScript + Vite |
 | MCP Server | TypeScript + `@modelcontextprotocol/sdk` + `zod` |
-| Tests | vitest — 11 tests, <1s |
+| Tests | vitest — 10 tests, <1s |
 | Bundle | 9KB extension, 7 total deps |
 
 ## Troubleshooting
