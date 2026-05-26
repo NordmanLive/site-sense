@@ -107,6 +107,25 @@ async function disableAllSites() {
 
 // ─── Content Script Readiness ───────────────────────────────────────
 
+/**
+ * Inject content.js into the current active tab using the activeTab
+ * permission grant that comes from a recent user invocation (popup open,
+ * icon click, session approval). Safe to call repeatedly — content.js
+ * guards against double-installation via __siteSenseContentInstalled.
+ * Silently no-ops on restricted URLs or missing permission.
+ */
+async function injectContentScriptIntoActiveTab(): Promise<void> {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id || !isCapturableUrl(tab.url)) return;
+    try {
+      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
+    } catch { /* no permission — OK for default mode */ }
+  } catch (err) {
+    console.warn(LOG, 'injectContentScriptIntoActiveTab failed:', err);
+  }
+}
+
 async function ensureContentScript(tabId: number): Promise<boolean> {
   for (let i = 0; i < 3; i++) {
     try {
@@ -292,12 +311,7 @@ chrome.runtime.onMessage.addListener((msg: ContentMessage | PopupMessage, sender
     sessionApproved = true;
     (async () => {
       try {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (tab?.id && isCapturableUrl(tab.url)) {
-          try {
-            await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
-          } catch { /* no permission — OK for default mode */ }
-        }
+        await injectContentScriptIntoActiveTab();
         if (pendingCapture) {
           const req = pendingCapture;
           pendingCapture = null;
@@ -307,6 +321,15 @@ chrome.runtime.onMessage.addListener((msg: ContentMessage | PopupMessage, sender
         console.error(LOG, 'session_approved handler failed:', err);
       }
     })();
+    sendResponse({ ok: true });
+    return true;
+  }
+
+  if (msg.type === 'prepare_active_tab') {
+    // Popup-open grants activeTab on the current tab; use it to inject
+    // content.js so a capture in this new window/tab works without the
+    // user pressing Allow again.
+    injectContentScriptIntoActiveTab();
     sendResponse({ ok: true });
     return true;
   }

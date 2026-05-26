@@ -33,6 +33,10 @@ async function init() {
   if (response.sessionApproved) {
     approvedSection.classList.remove('hidden');
     allSitesToggle.checked = await hasAllSites();
+    // Popup-open grants activeTab on the current tab. Ask background to
+    // inject content.js now so a capture in this (possibly new) window
+    // works without the user having to press Allow again.
+    chrome.runtime.sendMessage({ type: 'prepare_active_tab' }).catch(() => {});
   } else {
     approvalSection.classList.remove('hidden');
   }

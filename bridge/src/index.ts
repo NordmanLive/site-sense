@@ -135,13 +135,20 @@ function createMCPServer(): Server {
         name: 'site_sense_capture',
         description:
           "Capture the current browser tab's accessibility tree and screenshot. " +
-          'By default returns a COMPACT view: interactive elements only (buttons, links, inputs, forms) ' +
-          'plus page landmarks, with a low-res JPEG screenshot (~90KB total). ' +
-          'This is usually enough to understand what page the user is on and what actions are available. ' +
-          'If you need more detail (specific text content, non-interactive elements, table data, or ' +
-          'pixel-perfect screenshot), set mode to "full" which returns the complete DOM tree with a ' +
-          'lossless PNG screenshot (~1.4MB total). ' +
-          'Start with compact, escalate to full only if compact lacks the information you need. ' +
+          '**ALWAYS call this without the `mode` parameter (defaults to `compact`).** ' +
+          'Compact returns interactive elements (buttons, links, inputs, forms) plus page ' +
+          'landmarks and a JPEG screenshot (~90KB). This is enough to answer almost every ' +
+          'question: what page is open, what actions are available, what the user is looking at, ' +
+          'and what text appears in headings, labels, and interactive controls. ' +
+          '\n\n' +
+          'Do NOT use `mode: "full"` by default. `full` returns the entire DOM tree plus a ' +
+          'lossless PNG (~1.4MB, ~15× larger) and burns a large amount of context. ' +
+          'ONLY set `mode: "full"` after you have first called this tool with the default ' +
+          'compact mode AND the compact result demonstrably lacked the specific information ' +
+          'needed to answer the user (e.g., you need exact body text of a paragraph not present ' +
+          'in compact, or the user explicitly asked for a pixel-perfect screenshot). ' +
+          'Never start with `full` "just in case". ' +
+          '\n\n' +
           'First call per session requires user approval in the browser.',
         inputSchema: {
           type: 'object' as const,
@@ -149,7 +156,11 @@ function createMCPServer(): Server {
             mode: {
               type: 'string' as const,
               enum: ['compact', 'full'],
-              description: 'compact (default): interactive elements + landmarks + JPEG screenshot. full: complete DOM tree + PNG screenshot. Start with compact, escalate to full if needed.',
+              description:
+                'Leave unset. The default `compact` mode answers almost every question at ~90KB. ' +
+                'Only set to `"full"` (~1.4MB, ~15× larger payload) AFTER a prior compact capture ' +
+                'in this same conversation failed to contain the specific detail the user needs, ' +
+                'or the user explicitly asked for a full-resolution screenshot or full DOM.',
               default: 'compact',
             },
           },

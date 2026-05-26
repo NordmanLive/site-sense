@@ -125,7 +125,8 @@ export type PopupMessage =
   | { type: 'get_state' }
   | { type: 'ping' }
   | { type: 'enable_all_sites' }
-  | { type: 'disable_all_sites' };
+  | { type: 'disable_all_sites' }
+  | { type: 'prepare_active_tab' };
 
 export interface PopupStateResponse {
   sessionApproved: boolean;
