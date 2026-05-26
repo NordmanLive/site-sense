@@ -1,6 +1,6 @@
 # site-sense
 
-[![CI](https://github.com/YotamNordman/site-sense/actions/workflows/ci.yml/badge.svg)](https://github.com/YotamNordman/site-sense/actions/workflows/ci.yml)
+[![CI](https://github.com/NordmanLive/site-sense/actions/workflows/ci.yml/badge.svg)](https://github.com/NordmanLive/site-sense/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 **Give your AI coding CLI eyes into web portals. No cloud. No storage. Read-only.**
@@ -16,7 +16,7 @@ You're in a conversation with your AI assistant. It says *"go to the Azure Porta
 ## Quick Start
 
 ```bash
-git clone https://github.com/YotamNordman/site-sense.git
+git clone https://github.com/NordmanLive/site-sense.git
 cd site-sense
 npm install && npm run build
 npm run setup -- --browser edge    # or chrome

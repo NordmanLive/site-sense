@@ -5,7 +5,7 @@ Thank you for your interest in contributing! Here's how to get started.
 ## Development Setup
 
 ```bash
-git clone https://github.com/YotamNordman/site-sense.git
+git clone https://github.com/NordmanLive/site-sense.git
 cd site-sense
 npm install
 npm run build
